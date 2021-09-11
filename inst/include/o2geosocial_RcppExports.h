@@ -24,17 +24,17 @@ namespace o2geosocial {
         }
     }
 
-    inline std::vector<int> cpp_are_possible_ancestors(Rcpp::IntegerVector t_inf, Rcpp::IntegerVector alpha, Rcpp::StringVector genotype, Rcpp::IntegerVector cluster, size_t i) {
-        typedef SEXP(*Ptr_cpp_are_possible_ancestors)(SEXP,SEXP,SEXP,SEXP,SEXP);
+    inline std::vector<int> cpp_are_possible_ancestors(Rcpp::IntegerVector t_inf, Rcpp::IntegerVector alpha, Rcpp::StringVector genotype, Rcpp::StringVector gen_tree, Rcpp::IntegerVector cluster, size_t i) {
+        typedef SEXP(*Ptr_cpp_are_possible_ancestors)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_cpp_are_possible_ancestors p_cpp_are_possible_ancestors = NULL;
         if (p_cpp_are_possible_ancestors == NULL) {
-            validateSignature("std::vector<int>(*cpp_are_possible_ancestors)(Rcpp::IntegerVector,Rcpp::IntegerVector,Rcpp::StringVector,Rcpp::IntegerVector,size_t)");
+            validateSignature("std::vector<int>(*cpp_are_possible_ancestors)(Rcpp::IntegerVector,Rcpp::IntegerVector,Rcpp::StringVector,Rcpp::StringVector,Rcpp::IntegerVector,size_t)");
             p_cpp_are_possible_ancestors = (Ptr_cpp_are_possible_ancestors)R_GetCCallable("o2geosocial", "_o2geosocial_cpp_are_possible_ancestors");
         }
         RObject rcpp_result_gen;
         {
             RNGScope RCPP_rngScope_gen;
-            rcpp_result_gen = p_cpp_are_possible_ancestors(Shield<SEXP>(Rcpp::wrap(t_inf)), Shield<SEXP>(Rcpp::wrap(alpha)), Shield<SEXP>(Rcpp::wrap(genotype)), Shield<SEXP>(Rcpp::wrap(cluster)), Shield<SEXP>(Rcpp::wrap(i)));
+            rcpp_result_gen = p_cpp_are_possible_ancestors(Shield<SEXP>(Rcpp::wrap(t_inf)), Shield<SEXP>(Rcpp::wrap(alpha)), Shield<SEXP>(Rcpp::wrap(genotype)), Shield<SEXP>(Rcpp::wrap(gen_tree)), Shield<SEXP>(Rcpp::wrap(cluster)), Shield<SEXP>(Rcpp::wrap(i)));
         }
         if (rcpp_result_gen.inherits("interrupted-error"))
             throw Rcpp::internal::InterruptedException();
@@ -43,6 +43,27 @@ namespace o2geosocial {
         if (rcpp_result_gen.inherits("try-error"))
             throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
         return Rcpp::as<std::vector<int> >(rcpp_result_gen);
+    }
+
+    inline Rcpp::List cpp_log_like_s(Rcpp::NumericVector population, Rcpp::NumericMatrix distance, double a, double b, Rcpp::String spatial) {
+        typedef SEXP(*Ptr_cpp_log_like_s)(SEXP,SEXP,SEXP,SEXP,SEXP);
+        static Ptr_cpp_log_like_s p_cpp_log_like_s = NULL;
+        if (p_cpp_log_like_s == NULL) {
+            validateSignature("Rcpp::List(*cpp_log_like_s)(Rcpp::NumericVector,Rcpp::NumericMatrix,double,double,Rcpp::String)");
+            p_cpp_log_like_s = (Ptr_cpp_log_like_s)R_GetCCallable("o2geosocial", "_o2geosocial_cpp_log_like_s");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_cpp_log_like_s(Shield<SEXP>(Rcpp::wrap(population)), Shield<SEXP>(Rcpp::wrap(distance)), Shield<SEXP>(Rcpp::wrap(a)), Shield<SEXP>(Rcpp::wrap(b)), Shield<SEXP>(Rcpp::wrap(spatial)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (Rcpp::internal::isLongjumpSentinel(rcpp_result_gen))
+            throw Rcpp::LongjumpException(rcpp_result_gen);
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<Rcpp::List >(rcpp_result_gen);
     }
 
     inline Rcpp::List cpp_log_like(Rcpp::NumericVector population, Rcpp::NumericMatrix distance, Rcpp::NumericMatrix ances, double a, double b, int max_kappa, double gamma, Rcpp::String spatial, int nb_cases) {
@@ -127,6 +148,27 @@ namespace o2geosocial {
         if (rcpp_result_gen.inherits("try-error"))
             throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
         return Rcpp::as<Rcpp::IntegerVector >(rcpp_result_gen);
+    }
+
+    inline Rcpp::String cpp_gen_tree(Rcpp::IntegerVector tree, Rcpp::IntegerVector cluster, Rcpp::StringVector genotype, size_t i) {
+        typedef SEXP(*Ptr_cpp_gen_tree)(SEXP,SEXP,SEXP,SEXP);
+        static Ptr_cpp_gen_tree p_cpp_gen_tree = NULL;
+        if (p_cpp_gen_tree == NULL) {
+            validateSignature("Rcpp::String(*cpp_gen_tree)(Rcpp::IntegerVector,Rcpp::IntegerVector,Rcpp::StringVector,size_t)");
+            p_cpp_gen_tree = (Ptr_cpp_gen_tree)R_GetCCallable("o2geosocial", "_o2geosocial_cpp_gen_tree");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_cpp_gen_tree(Shield<SEXP>(Rcpp::wrap(tree)), Shield<SEXP>(Rcpp::wrap(cluster)), Shield<SEXP>(Rcpp::wrap(genotype)), Shield<SEXP>(Rcpp::wrap(i)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (Rcpp::internal::isLongjumpSentinel(rcpp_result_gen))
+            throw Rcpp::LongjumpException(rcpp_result_gen);
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<Rcpp::String >(rcpp_result_gen);
     }
 
     inline Rcpp::IntegerVector cpp_find_local_cases(Rcpp::IntegerVector alpha, Rcpp::IntegerVector cluster, int i) {

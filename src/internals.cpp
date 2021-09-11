@@ -33,6 +33,7 @@
 std::vector<int> cpp_are_possible_ancestors(Rcpp::IntegerVector t_inf, 
                                             Rcpp::IntegerVector alpha,
                                             Rcpp::StringVector genotype,
+                                            Rcpp::StringVector gen_tree,
                                             Rcpp::IntegerVector cluster,
                                             size_t i) {
   size_t n = cluster.size();
@@ -42,24 +43,19 @@ std::vector<int> cpp_are_possible_ancestors(Rcpp::IntegerVector t_inf,
   
   // gen_ref: Genotype of i
   Rcpp::String gen_ref = genotype[i-1];
-  Rcpp::String new_gen;
   int n_desc;
   Rcpp::IntegerVector all_descendents;
-  Rcpp::IntegerVector new_all_descendents;
-  size_t new_n_desc;
   // Find all descents from i
   all_descendents = cpp_find_all_descendents(alpha, t_inf, cluster, i);
   n_desc = all_descendents.size();
-  size_t k;
   int j = 0;
   int j_clust;
-  // Find if there's a genotype reported in i's descendents
   while(gen_ref == "Not attributed" && j<n_desc){
     gen_ref = genotype[all_descendents[j]-1];
     ++j;
   }
   // If there was no genotype reported, then every case infected before i
-  // and from the same group of cases ("cluster") can be considered an import
+  // and from the same group of cases ("cluster") can be considered an infector
   if(gen_ref == "Not attributed"){
     for (size_t j = 0; j < n; j++) {
       j_clust = cluster[j]-1;
@@ -72,44 +68,10 @@ std::vector<int> cpp_are_possible_ancestors(Rcpp::IntegerVector t_inf,
     // genotype as i and i's descendents can be a cluster
     for (size_t j = 0; j < n; j++) {
       j_clust = cluster[j]-1;
-      // Loop we only look into the ancestors, to get the whole tree from 
-      // their descendents
-      if(alpha[j_clust] == NA_INTEGER){
-        new_gen = genotype[j_clust];
-        // If j_clust's genotype is reported, and it is the same as gen_ref,
-        // all cases from j_clust's tree who got infected before i are potential
-        // infectors
-        if(new_gen == gen_ref){
-          new_all_descendents = cpp_find_all_descendents(alpha, t_inf, 
-                                                         cluster, j_clust+1);
-          new_n_desc = new_all_descendents.size();
-          
-          for (k = 0; k < new_n_desc; k++) 
-            if(t_inf[new_all_descendents[k]-1] < ref_t_inf){ // offset
-              out.push_back(new_all_descendents[k]);
-            }
-        }
-        // If j_clust's genotype is not reported, we need to loop over j_clust's 
-        // descendents to find out if there's a reported genotype in the tree
-        if(new_gen == "Not attributed"){
-          new_all_descendents = cpp_find_all_descendents(alpha, t_inf, 
-                                                         cluster, j_clust+1);
-          new_n_desc = new_all_descendents.size();
-          k = 0;
-          while(new_gen == "Not attributed" &&
-                k<new_n_desc){
-            new_gen = genotype[new_all_descendents[k]-1];
-            ++k;
-          }
-          // If the genotype reported is gen_ref, or if there's no reported
-          // genotype in j_clust's tree all cases from j_clust's tree who got 
-          // infected before i are potential infectors
-          if(new_gen == "Not attributed" || new_gen == gen_ref)
-            for (size_t l = 0; l < new_n_desc; l++) 
-              if(t_inf[new_all_descendents[l]-1] < ref_t_inf)
-                out.push_back(new_all_descendents[l]);
-              
-        }
+      if (t_inf[j_clust] < ref_t_inf && 
+          (gen_tree[j_clust] == gen_ref 
+             || gen_tree[j_clust] == "Not attributed")) { // offset
+        out.push_back(j_clust+1);
       }
     }
   }
@@ -123,33 +85,22 @@ std::vector<int> cpp_are_possible_ancestors(Rcpp::IntegerVector t_inf,
 
 // [[Rcpp::interfaces(r, cpp)]]
 // [[Rcpp::export()]]
-Rcpp::List cpp_log_like(Rcpp::NumericVector population, Rcpp::NumericMatrix distance,
-                        Rcpp::NumericMatrix ances, double a, double b, int max_kappa,
-                        double gamma, Rcpp::String spatial, int nb_cases) {
+Rcpp::List cpp_log_like_s(Rcpp::NumericVector population, Rcpp::NumericMatrix distance,
+                          double a, double b, Rcpp::String spatial) {
   int size_pop = population.size();
   Rcpp::NumericVector population_a(size_pop);
   Rcpp::NumericVector sum_pop(size_pop);
   Rcpp::NumericMatrix nb_move(size_pop, size_pop);
-  double thresh_dist = gamma;
-
-  // log_s_dens with no missing generation
-  // Rcpp::NumericMatrix probs_tot(size_pop, size_pop);
-  // log_s_dens with one missing generation
-  Rcpp::NumericMatrix probs(nb_cases, nb_cases);
-  int j, k, l;
-  double thresh_probs = 0.0;
-  if(size_pop <1000) thresh_probs = 0.000001;
-  else if(size_pop <3000) thresh_probs = 0.00001;
+  
+  Rcpp::NumericMatrix probs(size_pop, size_pop);
+  int j, k;
   
   for(k = 0; k<size_pop; k++)
     population_a[k] = pow(population[k], a);
-  // When the distance between two counties is above thresh, we consider the 
-  // chances of connection are null. This significantly speeds up the function
-  // by reducing the number of elements of the matrix that need to be calculated.
   if(spatial == "exponential"){
     for(k = 0; k<size_pop; k++){
       for(j = 0; j<size_pop; j++){
-        if(distance(j,k) < thresh_dist && j>k){
+        if(j>k){
           nb_move(k, j) = population_a[k]*exp(-b*distance(k,j));
           nb_move(j, k) = nb_move(k,j) * population_a[j] / population_a[k];
           sum_pop[j] += nb_move(k, j);
@@ -160,16 +111,14 @@ Rcpp::List cpp_log_like(Rcpp::NumericVector population, Rcpp::NumericMatrix dist
         }
       }
       for(j = 0; j<size_pop; j++){
-        if(distance(k,j) <= thresh_dist){
-          if(k < nb_cases && j < nb_cases) probs(j, k) = nb_move(j, k) / sum_pop[k];
-          else nb_move(j, k) = nb_move(j, k) / sum_pop[k];
-        }
+        probs(j, k) = nb_move(j, k) / sum_pop[k];
+        probs(j, k) = (probs(j, k));
       }
     }
   } else if(spatial == "power-law"){
     for(k = 0; k<size_pop; k++){
       for(j = 0; j<size_pop; j++){
-        if(distance(j,k) < thresh_dist && j>k){
+        if(j>k){
           nb_move(k, j) = population_a[k]*pow(1+distance(j,k), b);
           nb_move(j, k) = nb_move(k,j) * population_a[j] / population_a[k];
           sum_pop[j] += nb_move(k, j);
@@ -180,59 +129,23 @@ Rcpp::List cpp_log_like(Rcpp::NumericVector population, Rcpp::NumericMatrix dist
         }
       }
       for(j = 0; j<size_pop; j++){
-        if(distance(k,j) <= thresh_dist){
-          if(k < nb_cases && j < nb_cases) probs(j, k) = nb_move(j, k) / sum_pop[k];
-          else nb_move(j, k) = nb_move(j, k) / sum_pop[k];
-        }
+        probs(j, k) = nb_move(j, k) / sum_pop[k];
+        probs(j, k) = (probs(j, k));
       }
     }
   }
-  if(max_kappa > 1){
-    Rcpp::NumericMatrix probs2(nb_cases, nb_cases);
-    for(k = 0; k<nb_cases; k++){
-      for(j = 0; j<nb_cases; j++){
-        if(ances(k, j) == 1 && distance(k,j) <= thresh_dist){
-          for(l = 0; l < size_pop; l++){
-            if(l < nb_cases){
-              if((probs(k, l) * probs(l, j)) > thresh_probs &&
-                 distance(k, l) <= thresh_dist && distance(l, j) <= thresh_dist)
-                probs2(k,j) += probs(k, l) * probs(l, j);
-            }
-            else
-              if((nb_move(k, l) * nb_move(l, j)) > thresh_probs &&
-                 distance(k, l) <= thresh_dist && distance(l, j) <= thresh_dist)
-                probs2(k,j)  += nb_move(k, l) * nb_move(l, j);
-          }
-        }
-      }
-    }
-    for(k = 0; k<nb_cases; k++){
-      for(j = 0; j<nb_cases; j++){
-        if(ances(k, j) == 1 && distance(k,j) <= thresh_dist){
-          probs2(k, j) = log(probs2(k, j));
-          probs(k, j) = log(probs(k, j));
-        } else{
-          probs2(k, j) = -1000;
-          probs(k, j) = -1000;
-        }
-      }
-    }
-    Rcpp::List new_log_s_dens = Rcpp::List::create(probs, probs2);
-    return(new_log_s_dens);
-  } else{
-    for(k = 0; k<nb_cases; k++){
-      for(j = 0; j<nb_cases; j++){
-        if(ances(k, j) == 1 && distance(k,j) <= thresh_dist) probs(k, j) = log(probs(k, j));
-        else if(distance(k,j) > thresh_dist) probs(k, j) = -1000;
-      }
-    }
-    Rcpp::List new_log_s_dens = Rcpp::List::create(probs);
-    return(new_log_s_dens);
-  }
+  Rcpp::List new_log_s_dens = Rcpp::List::create(probs);
+  return(new_log_s_dens);
 }
 
 
-
+// [[Rcpp::export()]]
+Rcpp::List cpp_log_like(Rcpp::NumericVector population, Rcpp::NumericMatrix distance,
+                        Rcpp::NumericMatrix ances, double a, double b, int max_kappa,
+                        double gamma, Rcpp::String spatial, int nb_cases) {
+  Rcpp::List log_like = cpp_log_like_s(population, distance, a, b, spatial);
+  return log_like;
+}
 
 // ---------------------------
 
@@ -252,7 +165,7 @@ Rcpp::IntegerVector cpp_find_descendents(Rcpp::IntegerVector alpha,
                                          Rcpp::IntegerVector cluster, int i) {
   size_t counter = 0, n = 0;
   size_t length_cluster = cluster.size();
-
+  
   // determine size of output vector and create it
   for (size_t j = 0; j < length_cluster; j++) {
     if (alpha[cluster[j]-1] == i) n++;
@@ -333,6 +246,28 @@ Rcpp::IntegerVector cpp_find_all_tree(Rcpp::IntegerVector alpha,
 }
 
 
+// ---------------------------
+
+// 
+
+// [[Rcpp::interfaces(r, cpp)]]
+// [[Rcpp::export()]]
+Rcpp::String cpp_gen_tree(Rcpp::IntegerVector tree,
+                          Rcpp::IntegerVector cluster,
+                          Rcpp::StringVector genotype,
+                          size_t i){
+  
+  Rcpp::String gen = genotype[i-1];
+  int j = 0;
+  int n_tree = tree.size();
+  
+  while(j < n_tree && gen == "Not attributed"){
+    gen = genotype[tree[j] - 1];
+    ++j;
+  }
+  
+  return(gen);
+}
 
 // ---------------------------
 
@@ -423,7 +358,7 @@ Rcpp::List cpp_swap_cases(Rcpp::List param, Rcpp::IntegerVector cluster, int i) 
   Rcpp::IntegerVector t_inf_out = clone(t_inf_in);
   Rcpp::IntegerVector kappa_out = clone(kappa_in);
   Rcpp::List out;
-
+  
   size_t length_cluster = cluster.size();
   out["alpha"] = alpha_out;
   out["t_inf"] = t_inf_out;

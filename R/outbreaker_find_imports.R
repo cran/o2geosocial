@@ -25,8 +25,8 @@ outbreaker_find_imports <- function(moves, data, param_current,
   J <- length(moves)
   
   ## create matrix of individual influences ##
-  n_measures <- floor((config$n_iter_import - config$burnin) / 
-                        config$sample_every_import)
+  n_measures <- sum(seq(0, config$n_iter_import, 
+                        config$sample_every_import) > config$burnin)
   influences <- matrix(0, ncol = data$N, nrow = n_measures)
   colnames(influences) <- 1:data$N
 
@@ -49,6 +49,9 @@ outbreaker_find_imports <- function(moves, data, param_current,
                                  param = param_current_imports, i = i,
                                  custom_functions = likelihoods_imports)
                       ), numeric(1))
+        # Do not take the influence of importation into account
+        # (we are only interested in connected cases)
+        influences_imports[counter, is.na(param_current_imports$alpha)] <- -1
         if(config_imports$verbatim == TRUE) 
           message(paste0("Finding import, Iteration number: ", i, "/",
                          config_imports$n_iter_import, "|| likelihood = ", 
@@ -70,15 +73,33 @@ outbreaker_find_imports <- function(moves, data, param_current,
   param_current <- outcome_MCMC[["param_current"]]
   
   ## Influence matrix per cluster
-  list_influences <- sapply(1:max(data$is_cluster), function(X)
-    return(influences[, which(data$is_cluster == X)]))
+  if(max(data$is_cluster) == 1) list_influences <- list(influences) else
+    list_influences <- sapply(1:max(data$is_cluster), function(X)
+      return(influences[, which(data$is_cluster == X)]))
+  
   ## Compute the likelihood threshold. The likelihoods of connection lower than
   ## the threshold will be considered implausible
   threshold <- -log(config$outlier_threshold)*5
+  
+  # Do not take the influence of importation into account
+  # (we are only interested in connected cases)
+  influences_vect <- c(influences[influences >= 0])
+  
+  # Compute the relative threshold 
   if(config$outlier_relative == TRUE){
-    influences_vect <- c(influences)
     threshold <- quantile(influences_vect, probs = config$outlier_threshold)
+    message(
+      "The import threshold computed from the likelihoods of connection is ",
+      round(threshold, 1), ". It corresponds to an absolute threshold of ", 
+      round(exp(-threshold/5), 3), 
+      ". Therefore, a case with an probability of connection per component above ",
+      round(exp(-threshold/5), 3), " will not be classified as an importation.") 
   }
+  if(config$outlier_plot == TRUE){
+    plot_importations(influences_vect = influences_vect, threshold = threshold, 
+                      config = config)
+  } else 
+    message("Set config$outlier_plot = TRUE to plot the likelihoods of connection")
   
   # Set cases with no likely infector as import
   new_imports <- unlist(lapply(list_influences, function(X){
@@ -95,7 +116,7 @@ outbreaker_find_imports <- function(moves, data, param_current,
     }
   }))
   
-  
+  message(paste0("Adding ", length(new_imports), " new importations"))
   
   ## All outliers are considered as introductions, so that ancestries (alpha) are set to 'NA' and
   ## the number of generations between cases and their ancestor (kappa) is set to NA; the
@@ -110,5 +131,5 @@ outbreaker_find_imports <- function(moves, data, param_current,
   
 
   return(list(param_current = ini_param$current,
-              param_store = ini_param$store))
+              param_store = ini_param$store, threshold = as.numeric(threshold)))
 }

@@ -29,8 +29,8 @@
 #' standardized, this distribution is rescaled to sum to 1.}
 #'
 #' \item{f_dens}{similar to \code{w_dens}, except that this is the distribution
-#' of the colonization time, i_e. time interval during which the pathogen can
-#' be sampled from the patient.}
+#' of the incubation period, i_e. time interval between the reported onset date
+#' and the infection date.}
 #' 
 #' \item{a_dens}{a matrix of numeric values indicating the contact between age 
 #' groups, reflecting on the infectious potential of a case for a given age group.}
@@ -162,19 +162,21 @@ outbreaker_data <- function(..., data = list(...)) {
     
     ## Remove trailing zeroes to prevent starting with -Inf temporal loglike
     if(data$w_dens[length(data$w_dens)] < 1e-15) {
-      final_index <- max(which(data$w_dens > 1e-15))
+      final_index <- max(which(!is.infinite(log(data$w_dens)))) - 1
       data$w_dens <- data$w_dens[1:final_index]
       warning("Removed trailing zeroes found in w_dens")
     }
     
-    ## add an exponential tail summing to 1e-4 to 'w'
+    ## add an exponential tail to 'w'
     ## to cover the span of the outbreak
     ## (avoids starting with -Inf temporal loglike)
     if (length(data$w_dens) < data$max_range) {
-      length_to_add <- (data$max_range-length(data$w_dens)) + 10 # +10 to be on the safe side
-      val_to_add <- stats::dexp(seq_len(length_to_add), 1)
-      val_to_add <- 1e-4*(val_to_add/sum(val_to_add))
-      data$w_dens <- c(data$w_dens, val_to_add)
+      final_index <- length(data$w_dens)
+      length_to_add <- (data$max_range - final_index) + 1 
+      val_to_add <- min(1e-100, data$w_dens[final_index])
+      data$w_dens <- c(data$w_dens[-final_index], 
+                       rep(val_to_add, length_to_add))
+      data$w_dens <- data$w_dens/sum(data$w_dens)
     }
     
     ## standardize the mass function
@@ -296,42 +298,9 @@ outbreaker_data <- function(..., data = list(...)) {
       if(any(dim(data$distance)<max(data$region)))
         stop("The dimension of the distance matrix is lower than the maximum value of the region vector")
     }
-    can_be_ances <- vapply(seq_len(data$N), function(X){
-      can_be_ances_X <- rep(FALSE, data$N)
-      if(data$import[X] == TRUE) return(can_be_ances_X)
-      if(!is.null(data$cluster)){
-        can_be_ances_X[data$cluster[[data$is_cluster[X]]]] <- TRUE        
-      } else can_be_ances_X[1:data$N] <- TRUE
-
-      can_be_ances_X[X] <- FALSE
-      if(!is.null(data$f_dens) & !is.null(data$dates)){
-        unlik_f_dens <- which(data$log_f_dens[-1] < -20 &
-                                diff(data$log_f_dens) < 0)[1]
-        can_be_ances_X[data$dates[X] + unlik_f_dens < data$dates] <- FALSE
-      }
-      if(!is.null(data$w_dens) & !is.null(data$dates)){
-        unlik_w_dens <- which(data$log_w_dens[-1] < -40 &
-                                diff(data$log_w_dens[1,]) < 0)[1]
-        can_be_ances_X[data$dates[X] - unlik_w_dens > data$dates] <- FALSE
-      }
-      if(data$genotype[X] != "Not attributed"){
-        can_be_ances_X[data$genotype != data$genotype[X] &
-                         data$genotype != "Not attributed"] <- FALSE        
-      }
-      return(can_be_ances_X)
-    }, rep(FALSE, data$N))
-    ID_1 <- ID_2 <- region_1 <- region_2 <- ances_ID <- NULL
-    dt_can_be_ances <- data.table(ID_1 = rep(seq_len(data$N), data$N),
-                                  ID_2 = rep(seq_len(data$N), each = data$N),
-                                  ances_ID = c(can_be_ances))
-    dt_can_be_ances[, region_1 := data$region[ID_1]]
-    dt_can_be_ances[, region_2 := data$region[ID_2]]
-    dt_can_be_ances_reg <- dt_can_be_ances[, sum(ances_ID),
-                                           by= c("region_1", "region_2")]
-    data$can_be_ances_reg <- matrix(dt_can_be_ances_reg$V1 > 0, 
-                                    length(unique(data$region)),
-                                    length(unique(data$region)))
-    
+    # can_be_ances_reg is now deprecated
+    data$can_be_ances_reg <- matrix(-1, nrow = length(unique(data$region)), 
+                                    ncol = length(unique(data$region)))
   }
   if (!is.null(data$s_dens)){
     if(!is.matrix(data$s_dens)) stop("s_dens should be a matrix")
@@ -344,7 +313,7 @@ outbreaker_data <- function(..., data = list(...)) {
       stop("non-finite values detected in s_dens")
     }
     
-    data$log_s_dens <- log(data$s_dens)
+    data$log_s_dens <- (data$s_dens)
   }
   
   ## output is a list of checked data

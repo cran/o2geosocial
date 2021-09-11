@@ -54,7 +54,7 @@
 #' @examples
 #' 
 #' ## specify a null model by disabling all likelihood components
-#' f_null <- function(data, param) {
+#' f_null <- function(data, config = NULL, param, i) {
 #'   return(0.0)
 #' }
 #' 
@@ -146,19 +146,20 @@ custom_likelihoods <- function(...) {
   
   ## check they all have a single argument
   
-  with_two_args <- function(x) {
+  with_three_four_args <- function(x) {
     if(is.function(x)) {
-      return (length(methods::formalArgs(x)) == 2L)
+      return (length(methods::formalArgs(x)) == 3L || 
+                length(methods::formalArgs(x)) == 4L)
     }
     
     return(TRUE)
   }
   
-  two_args <- vapply(likelihoods, with_two_args, logical(1))
+  three_four_args <- vapply(likelihoods, with_three_four_args, logical(1))
   
-  if (!all(two_args)) {
-    culprits <- likelihoods_names[!two_args]
-    msg <- paste0("The following likelihoods don't have two arguments: ",
+  if (!all(three_four_args)) {
+    culprits <- likelihoods_names[!three_four_args]
+    msg <- paste0("The following likelihoods don't have three or four arguments: ",
                   paste(culprits, collapse = ", "))
     stop(msg)
   }

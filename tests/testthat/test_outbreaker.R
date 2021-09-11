@@ -77,8 +77,8 @@ test_that("Results work, all component", {
   
   times <- c(0, 4, 8, 9, 23)
   
-  f <- c(.1, .2, .4, .2, .05, 0.03, 0.01, 0.005, 0.005)
-  w <- c(.05, .1, .25, .5, .05, 0.03, 0.01, 0.005, 0.005)
+  f <- c(.1, .2, .4, .2, .05, .03, .01, .005, .005)
+  w <- c(.05, .1, .25, .5, .05, .03, .01, .005, .005)
   
   
   data(toy_outbreak_short)
@@ -132,7 +132,7 @@ test_that("Results work, 1 component at the time", {
   
   genotype <- c("Not attributed", "B4", "Not attributed", "Not attributed", "B4")
   
-  f_null <- function(data, param) {
+  f_null <- function(data, config = NULL, param, i) {
     return(0.0)
   }
   
