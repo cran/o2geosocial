@@ -14,8 +14,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // cpp_are_possible_ancestors
-std::vector<int> cpp_are_possible_ancestors(Rcpp::IntegerVector t_inf, Rcpp::IntegerVector alpha, Rcpp::StringVector genotype, Rcpp::StringVector gen_tree, Rcpp::IntegerVector cluster, size_t i);
-static SEXP _o2geosocial_cpp_are_possible_ancestors_try(SEXP t_infSEXP, SEXP alphaSEXP, SEXP genotypeSEXP, SEXP gen_treeSEXP, SEXP clusterSEXP, SEXP iSEXP) {
+std::vector<int> cpp_are_possible_ancestors(Rcpp::IntegerVector t_inf, Rcpp::IntegerVector alpha, Rcpp::StringVector genotype, Rcpp::StringVector gen_tree, Rcpp::IntegerVector cluster, int delta, size_t i);
+static SEXP _o2geosocial_cpp_are_possible_ancestors_try(SEXP t_infSEXP, SEXP alphaSEXP, SEXP genotypeSEXP, SEXP gen_treeSEXP, SEXP clusterSEXP, SEXP deltaSEXP, SEXP iSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type t_inf(t_infSEXP);
@@ -23,16 +23,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::StringVector >::type genotype(genotypeSEXP);
     Rcpp::traits::input_parameter< Rcpp::StringVector >::type gen_tree(gen_treeSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type cluster(clusterSEXP);
+    Rcpp::traits::input_parameter< int >::type delta(deltaSEXP);
     Rcpp::traits::input_parameter< size_t >::type i(iSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_are_possible_ancestors(t_inf, alpha, genotype, gen_tree, cluster, i));
+    rcpp_result_gen = Rcpp::wrap(cpp_are_possible_ancestors(t_inf, alpha, genotype, gen_tree, cluster, delta, i));
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _o2geosocial_cpp_are_possible_ancestors(SEXP t_infSEXP, SEXP alphaSEXP, SEXP genotypeSEXP, SEXP gen_treeSEXP, SEXP clusterSEXP, SEXP iSEXP) {
+RcppExport SEXP _o2geosocial_cpp_are_possible_ancestors(SEXP t_infSEXP, SEXP alphaSEXP, SEXP genotypeSEXP, SEXP gen_treeSEXP, SEXP clusterSEXP, SEXP deltaSEXP, SEXP iSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_o2geosocial_cpp_are_possible_ancestors_try(t_infSEXP, alphaSEXP, genotypeSEXP, gen_treeSEXP, clusterSEXP, iSEXP));
+        rcpp_result_gen = PROTECT(_o2geosocial_cpp_are_possible_ancestors_try(t_infSEXP, alphaSEXP, genotypeSEXP, gen_treeSEXP, clusterSEXP, deltaSEXP, iSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -47,7 +48,7 @@ RcppExport SEXP _o2geosocial_cpp_are_possible_ancestors(SEXP t_infSEXP, SEXP alp
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -85,7 +86,7 @@ RcppExport SEXP _o2geosocial_cpp_log_like_s(SEXP populationSEXP, SEXP distanceSE
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -127,7 +128,7 @@ RcppExport SEXP _o2geosocial_cpp_log_like(SEXP populationSEXP, SEXP distanceSEXP
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -163,7 +164,7 @@ RcppExport SEXP _o2geosocial_cpp_find_descendents(SEXP alphaSEXP, SEXP clusterSE
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -200,7 +201,7 @@ RcppExport SEXP _o2geosocial_cpp_find_all_descendents(SEXP alphaSEXP, SEXP t_inf
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -237,7 +238,7 @@ RcppExport SEXP _o2geosocial_cpp_find_all_tree(SEXP alphaSEXP, SEXP t_infSEXP, S
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -274,7 +275,7 @@ RcppExport SEXP _o2geosocial_cpp_gen_tree(SEXP treeSEXP, SEXP clusterSEXP, SEXP 
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -310,28 +311,29 @@ RcppExport SEXP _o2geosocial_cpp_find_local_cases(SEXP alphaSEXP, SEXP clusterSE
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
 }
 // cpp_swap_cases
-Rcpp::List cpp_swap_cases(Rcpp::List param, Rcpp::IntegerVector cluster, int i);
-static SEXP _o2geosocial_cpp_swap_cases_try(SEXP paramSEXP, SEXP clusterSEXP, SEXP iSEXP) {
+Rcpp::List cpp_swap_cases(Rcpp::List param, Rcpp::IntegerVector cluster, Rcpp::IntegerVector move_alpha, int i);
+static SEXP _o2geosocial_cpp_swap_cases_try(SEXP paramSEXP, SEXP clusterSEXP, SEXP move_alphaSEXP, SEXP iSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type param(paramSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type cluster(clusterSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type move_alpha(move_alphaSEXP);
     Rcpp::traits::input_parameter< int >::type i(iSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_swap_cases(param, cluster, i));
+    rcpp_result_gen = Rcpp::wrap(cpp_swap_cases(param, cluster, move_alpha, i));
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _o2geosocial_cpp_swap_cases(SEXP paramSEXP, SEXP clusterSEXP, SEXP iSEXP) {
+RcppExport SEXP _o2geosocial_cpp_swap_cases(SEXP paramSEXP, SEXP clusterSEXP, SEXP move_alphaSEXP, SEXP iSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_o2geosocial_cpp_swap_cases_try(paramSEXP, clusterSEXP, iSEXP));
+        rcpp_result_gen = PROTECT(_o2geosocial_cpp_swap_cases_try(paramSEXP, clusterSEXP, move_alphaSEXP, iSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -346,7 +348,7 @@ RcppExport SEXP _o2geosocial_cpp_swap_cases(SEXP paramSEXP, SEXP clusterSEXP, SE
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -382,7 +384,7 @@ RcppExport SEXP _o2geosocial_cpp_ll_timing_infections(SEXP dataSEXP, SEXP paramS
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -418,7 +420,7 @@ RcppExport SEXP _o2geosocial_cpp_ll_timing_sampling(SEXP dataSEXP, SEXP paramSEX
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -455,7 +457,7 @@ RcppExport SEXP _o2geosocial_cpp_ll_space(SEXP dataSEXP, SEXP configSEXP, SEXP p
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -491,7 +493,7 @@ RcppExport SEXP _o2geosocial_cpp_ll_age(SEXP dataSEXP, SEXP paramSEXP, SEXP iSEX
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -527,7 +529,7 @@ RcppExport SEXP _o2geosocial_cpp_ll_reporting(SEXP dataSEXP, SEXP paramSEXP, SEX
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -563,7 +565,7 @@ RcppExport SEXP _o2geosocial_cpp_ll_timing(SEXP dataSEXP, SEXP paramSEXP, SEXP i
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -600,7 +602,7 @@ RcppExport SEXP _o2geosocial_cpp_ll_all(SEXP dataSEXP, SEXP configSEXP, SEXP par
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -638,7 +640,7 @@ RcppExport SEXP _o2geosocial_cpp_move_a(SEXP paramSEXP, SEXP dataSEXP, SEXP conf
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -676,7 +678,7 @@ RcppExport SEXP _o2geosocial_cpp_move_b(SEXP paramSEXP, SEXP dataSEXP, SEXP conf
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -714,7 +716,7 @@ RcppExport SEXP _o2geosocial_cpp_move_pi(SEXP paramSEXP, SEXP dataSEXP, SEXP con
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -750,7 +752,7 @@ RcppExport SEXP _o2geosocial_cpp_move_t_inf(SEXP paramSEXP, SEXP dataSEXP, SEXP 
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -787,7 +789,7 @@ RcppExport SEXP _o2geosocial_cpp_move_alpha(SEXP paramSEXP, SEXP dataSEXP, SEXP 
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -824,7 +826,7 @@ RcppExport SEXP _o2geosocial_cpp_move_ancestors(SEXP paramSEXP, SEXP dataSEXP, S
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -861,7 +863,7 @@ RcppExport SEXP _o2geosocial_cpp_move_swap_cases(SEXP paramSEXP, SEXP dataSEXP, 
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -898,7 +900,7 @@ RcppExport SEXP _o2geosocial_cpp_move_kappa(SEXP paramSEXP, SEXP dataSEXP, SEXP 
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -933,7 +935,7 @@ RcppExport SEXP _o2geosocial_cpp_prior_pi(SEXP paramSEXP, SEXP configSEXP, SEXP 
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -968,7 +970,7 @@ RcppExport SEXP _o2geosocial_cpp_prior_a(SEXP paramSEXP, SEXP configSEXP, SEXP c
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -1003,7 +1005,7 @@ RcppExport SEXP _o2geosocial_cpp_prior_b(SEXP paramSEXP, SEXP configSEXP, SEXP c
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -1038,7 +1040,7 @@ RcppExport SEXP _o2geosocial_cpp_prior_all(SEXP paramSEXP, SEXP configSEXP, SEXP
     if (rcpp_isError_gen) {
         SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
         UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
+        Rf_error("%s", CHAR(rcpp_msgSEXP_gen));
     }
     UNPROTECT(1);
     return rcpp_result_gen;
@@ -1048,7 +1050,7 @@ RcppExport SEXP _o2geosocial_cpp_prior_all(SEXP paramSEXP, SEXP configSEXP, SEXP
 static int _o2geosocial_RcppExport_validate(const char* sig) { 
     static std::set<std::string> signatures;
     if (signatures.empty()) {
-        signatures.insert("std::vector<int>(*cpp_are_possible_ancestors)(Rcpp::IntegerVector,Rcpp::IntegerVector,Rcpp::StringVector,Rcpp::StringVector,Rcpp::IntegerVector,size_t)");
+        signatures.insert("std::vector<int>(*cpp_are_possible_ancestors)(Rcpp::IntegerVector,Rcpp::IntegerVector,Rcpp::StringVector,Rcpp::StringVector,Rcpp::IntegerVector,int,size_t)");
         signatures.insert("Rcpp::List(*cpp_log_like_s)(Rcpp::NumericVector,Rcpp::NumericMatrix,double,double,Rcpp::String)");
         signatures.insert("Rcpp::List(*cpp_log_like)(Rcpp::NumericVector,Rcpp::NumericMatrix,Rcpp::NumericMatrix,double,double,int,double,Rcpp::String,int)");
         signatures.insert("Rcpp::IntegerVector(*cpp_find_descendents)(Rcpp::IntegerVector,Rcpp::IntegerVector,int)");
@@ -1056,7 +1058,7 @@ static int _o2geosocial_RcppExport_validate(const char* sig) {
         signatures.insert("Rcpp::IntegerVector(*cpp_find_all_tree)(Rcpp::IntegerVector,Rcpp::IntegerVector,Rcpp::IntegerVector,size_t)");
         signatures.insert("Rcpp::String(*cpp_gen_tree)(Rcpp::IntegerVector,Rcpp::IntegerVector,Rcpp::StringVector,size_t)");
         signatures.insert("Rcpp::IntegerVector(*cpp_find_local_cases)(Rcpp::IntegerVector,Rcpp::IntegerVector,int)");
-        signatures.insert("Rcpp::List(*cpp_swap_cases)(Rcpp::List,Rcpp::IntegerVector,int)");
+        signatures.insert("Rcpp::List(*cpp_swap_cases)(Rcpp::List,Rcpp::IntegerVector,Rcpp::IntegerVector,int)");
         signatures.insert("double(*cpp_ll_timing_infections)(Rcpp::List,Rcpp::List,SEXP,Rcpp::RObject)");
         signatures.insert("double(*cpp_ll_timing_sampling)(Rcpp::List,Rcpp::List,SEXP,Rcpp::RObject)");
         signatures.insert("double(*cpp_ll_space)(Rcpp::List,Rcpp::List,Rcpp::List,SEXP,Rcpp::RObject)");
@@ -1115,7 +1117,7 @@ RcppExport SEXP _o2geosocial_RcppExport_registerCCallable() {
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_o2geosocial_cpp_are_possible_ancestors", (DL_FUNC) &_o2geosocial_cpp_are_possible_ancestors, 6},
+    {"_o2geosocial_cpp_are_possible_ancestors", (DL_FUNC) &_o2geosocial_cpp_are_possible_ancestors, 7},
     {"_o2geosocial_cpp_log_like_s", (DL_FUNC) &_o2geosocial_cpp_log_like_s, 5},
     {"_o2geosocial_cpp_log_like", (DL_FUNC) &_o2geosocial_cpp_log_like, 9},
     {"_o2geosocial_cpp_find_descendents", (DL_FUNC) &_o2geosocial_cpp_find_descendents, 3},
@@ -1123,7 +1125,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_o2geosocial_cpp_find_all_tree", (DL_FUNC) &_o2geosocial_cpp_find_all_tree, 4},
     {"_o2geosocial_cpp_gen_tree", (DL_FUNC) &_o2geosocial_cpp_gen_tree, 4},
     {"_o2geosocial_cpp_find_local_cases", (DL_FUNC) &_o2geosocial_cpp_find_local_cases, 3},
-    {"_o2geosocial_cpp_swap_cases", (DL_FUNC) &_o2geosocial_cpp_swap_cases, 3},
+    {"_o2geosocial_cpp_swap_cases", (DL_FUNC) &_o2geosocial_cpp_swap_cases, 4},
     {"_o2geosocial_cpp_ll_timing_infections", (DL_FUNC) &_o2geosocial_cpp_ll_timing_infections, 4},
     {"_o2geosocial_cpp_ll_timing_sampling", (DL_FUNC) &_o2geosocial_cpp_ll_timing_sampling, 4},
     {"_o2geosocial_cpp_ll_space", (DL_FUNC) &_o2geosocial_cpp_ll_space, 5},

@@ -15,12 +15,6 @@ outbreaker_find_imports <- function(moves, data, param_current,
     return(list(param_current = param_current,
                 param_store = param_store))
   }
-  initial_value <- param_current
-  # If not here: initial value changes wih param_current
-  initial_value$alpha <- c(param_store$alpha[[1]])
-  ## store initial param values ##
-  ini_param <- list(current = param_current, store = param_store)
-  
   ## get number of moves ##
   J <- length(moves)
   
@@ -49,13 +43,41 @@ outbreaker_find_imports <- function(moves, data, param_current,
                                  param = param_current_imports, i = i,
                                  custom_functions = likelihoods_imports)
                       ), numeric(1))
-        # Do not take the influence of importation into account
-        # (we are only interested in connected cases)
-        influences_imports[counter, is.na(param_current_imports$alpha)] <- -1
+        
         if(config_imports$verbatim == TRUE) 
           message(paste0("Finding import, Iteration number: ", i, "/",
                          config_imports$n_iter_import, "|| likelihood = ", 
                          round(sum(influences_imports[counter,]), 2)))
+        # Correct the influence for cases linked to an importation:
+        ## Likelihoods of cases already classified as importations are not taken
+        ## into account when adding new imports. Therefore, implausible latent
+        ## periods may not result in the addition of an importation. To correct
+        ## for this, we incorporate the f_dens of importations to the influence 
+        ## score of their infectee: 
+        alpha <- param_current_imports$alpha
+        linked_to_imports <- which(is.na(alpha[alpha]) & !is.na(alpha))
+        f_like_linked <- - vapply(
+          linked_to_imports, function(i) (
+            cpp_ll_timing_sampling(data = data_imports, 
+                                   param = param_current_imports, i = i,
+                                   custom_function = likelihoods_imports$timing_sampling)
+          ), numeric(1))
+        f_like_ances <- - vapply(
+          alpha[linked_to_imports], function(i) (
+            cpp_ll_timing_sampling(data = data_imports, 
+                                   param = param_current_imports, i = i,
+                                   custom_function = likelihoods_imports$timing_sampling)
+          ), numeric(1))
+        # Compute maximum f_dens
+        average_f_link <- pmax(f_like_ances, f_like_linked)
+        
+        influences_imports[counter,linked_to_imports] <- 
+          influences_imports[counter,linked_to_imports] - 
+          f_like_linked + average_f_link
+        
+        # Do not take the influence of importation into account
+        # (we are only interested in connected cases)
+        influences_imports[counter, is.na(param_current_imports$alpha)] <- -1
         counter <- counter + 1L
       }
     } # end of the chain
@@ -92,7 +114,7 @@ outbreaker_find_imports <- function(moves, data, param_current,
       "The import threshold computed from the likelihoods of connection is ",
       round(threshold, 1), ". It corresponds to an absolute threshold of ", 
       round(exp(-threshold/5), 3), 
-      ". Therefore, a case with an probability of connection per component above ",
+      ". Therefore, a case with a probability of connection per component above ",
       round(exp(-threshold/5), 3), " will not be classified as an importation.") 
   }
   if(config$outlier_plot == TRUE){
@@ -110,13 +132,17 @@ outbreaker_find_imports <- function(moves, data, param_current,
       n_imports_iteration <- apply(bad_ancestor_matrix, 1, sum)
       # Add the min(n_imports_iteration) new import in the cluster
       imports <- names(which(
-        bad_ancestor_matrix[which.min(n_imports_iteration),] == TRUE))
+        bad_ancestor_matrix[which.min(n_imports_iteration),] & 
+          config$move_alpha[as.numeric(colnames(X))]))
       imports <- as.numeric(imports)
       return(imports)
     }
   }))
   
   message(paste0("Adding ", length(new_imports), " new importations"))
+  
+  ## store initial param values ##
+  ini_param <- list(current = param_current, store = param_store)
   
   ## All outliers are considered as introductions, so that ancestries (alpha) are set to 'NA' and
   ## the number of generations between cases and their ancestor (kappa) is set to NA; the
@@ -129,7 +155,9 @@ outbreaker_find_imports <- function(moves, data, param_current,
   ini_param$store$b[[1]] <- ini_param$current$b <- param_current$b
   ini_param$store$pi[[1]] <- ini_param$current$pi <- param_current$pi
   
-
+  ini_param$store$like[1] <- cpp_ll_all(data, config, param_current, NULL, likelihoods)
+  ini_param$store$post[1] <- ini_param$store$like[1] + ini_param$store$prior[1]
+  
   return(list(param_current = ini_param$current,
               param_store = ini_param$store, threshold = as.numeric(threshold)))
 }
