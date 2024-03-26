@@ -59,7 +59,7 @@ std::vector<int> cpp_are_possible_ancestors(Rcpp::IntegerVector t_inf,
   if(gen_ref == "Not attributed"){
     for (size_t j = 0; j < n; j++) {
       j_clust = cluster[j]-1;
-      if (t_inf[j_clust] < ref_t_inf && t_inf[j_clust] > ref_t_inf - delta) { // offset
+      if (t_inf[j_clust] < ref_t_inf && t_inf[j_clust] > (ref_t_inf - delta)) { // offset
         out.push_back(j_clust+1);
       }
     }
@@ -68,7 +68,7 @@ std::vector<int> cpp_are_possible_ancestors(Rcpp::IntegerVector t_inf,
     // genotype as i and i's descendents can be a cluster
     for (size_t j = 0; j < n; j++) {
       j_clust = cluster[j]-1;
-      if (t_inf[j_clust] < ref_t_inf && t_inf[j_clust] > ref_t_inf - delta && 
+      if (t_inf[j_clust] < ref_t_inf && t_inf[j_clust] > (ref_t_inf - delta) && 
           (gen_tree[j_clust] == gen_ref 
              || gen_tree[j_clust] == "Not attributed")) { // offset
         out.push_back(j_clust+1);
