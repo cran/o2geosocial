@@ -1,7 +1,7 @@
-a49764f6bbf56fdee0813850fef43aef *DESCRIPTION
+ce938260a785e30f78de50a007d5b55e *DESCRIPTION
 180dbe6936504398b4548c14cec493de *LICENSE
 5d0cde50d0e8f1e67e1062e29a7559d4 *NAMESPACE
-3f8cbcdc310eb6ddd11de6552dd77b96 *NEWS.md
+529559c5135f5a06df2edab53578f4bb *NEWS.md
 f0d2dc8fe1add96af356f0b4a63198fe *R/RcppExports.R
 4d980f2f1ed35b6eb5d91d52b7475bc0 *R/add_convolutions.R
 d2a8135623558e8b518c865546217e5f *R/bind_moves.R
@@ -12,7 +12,7 @@ e6a37a3609ebc80bc985b9cfce157823 *R/custom_moves.R
 e8de0a754d71aeb74198a41cd411a101 *R/custom_priors.R
 63093addad48a852a4ba63e7abe02fa7 *R/doc_data.R
 81566ec8e58e9567af7076a4ef3dc2a7 *R/modify_defaults.R
-dd398310928bc43b8a400fc0d9ab7bcf *R/outbreaker.R
+eaa8db2e9364701df1913f1713799325 *R/outbreaker.R
 a9a69c97500c34bd3fb48b512daa738d *R/outbreaker_data.R
 cff16cf4881a95dd24b9c55847598315 *R/outbreaker_find_imports.R
 e905ae9687642685400fa27121ed9294 *R/outbreaker_init_mcmc.R
@@ -24,12 +24,12 @@ e69c328797d18480d8a7a77f0dc8fe68 *R/outbreaker_move.R
 fd69afddc970123f0d40ce95d4c7bc91 *R/summary.outbreaker_chains.R
 e1297c0479bce1506acbb9a21c23d106 *R/zzz.R
 29bc0dd0beaf4bf4ed15ce77b9134c17 *README.md
-e4d65a2d8c95ec838dafc0475f46f3df *build/vignette.rds
+778d9d4ec68bef53b86866826209b4c7 *build/vignette.rds
 ecc0717316b7df4150954e201abef012 *data/toy_outbreak_long.RData
 3d10482b49bfae8ce57b6b39e5f2dd05 *data/toy_outbreak_short.RData
 1248e61e4b042fed5f390a8b48b40eea *inst/doc/o2geosocial.R
 25c1a11c5b60522e916b8a1dae0987f1 *inst/doc/o2geosocial.Rmd
-ac0637a686ea69aef817e0b0a22c4d8f *inst/doc/o2geosocial.html
+2d82384e54fa1f093c0cc1205c75619c *inst/doc/o2geosocial.html
 7556c4262ba80a41eba03b598259ef4e *inst/include/o2geosocial.h
 a4b49fdd6ba6f9a3dbdab38a1e5023b7 *inst/include/o2geosocial_RcppExports.h
 78a3217400caadf874379d7eba165acb *man/create_config.Rd
@@ -48,7 +48,7 @@ a7e9c31e812b5fb6a14c07545dd9ce32 *src/internals.cpp
 aa0fe18a3b429baac095de745f2424c5 *src/internals.h
 6d40126dbf8e51133f5eff724bd36406 *src/likelihoods.cpp
 eb911793c5d511a68af551f324093cba *src/likelihoods.h
-96e04758ff61b387da2c363e2bcae155 *src/moves.cpp
+3229a50f72741d73ace60c0147ba5984 *src/moves.cpp
 e74c0ec1a6d0ddb44b81af3e880b934c *src/moves.h
 6eb7d05a3f8301b157d40b1cb8947701 *src/priors.cpp
 3e61271ff429841412c52d321ea757dc *src/priors.h
